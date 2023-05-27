@@ -17,6 +17,7 @@ const newer         = require('gulp-newer');
 const fonter        = require('gulp-fonter');
 const ttf2woff2     = require('gulp-ttf2woff2');
 const svgSprite     = require('gulp-svg-sprite');
+const plumber       = require('gulp-plumber');
 
 
 function startBrowser() {
@@ -33,13 +34,14 @@ function watching() {
   watch('./src/scss/**/*.scss', scssToCss);
   watch('./src/js/**/*.js').on('change', browserSync.reload);
 
-  watch('./src/images/src', images);
+  // watch('./src/images/src', images);
 }
 
 function scssToCss() {
   return src('./src/scss/style.scss')
+    .pipe(plumber())
     .pipe(sourcemaps.init())
-      .pipe(sass({ outputStyle: 'compressed' }))
+      .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
       .pipe(autoprefixer({ overrideBrowserslist: ["last 10 version"] }))
       .pipe(rename('style.min.css'))
       .pipe(sourcemaps.write('.'))
@@ -49,6 +51,7 @@ function scssToCss() {
 
 function pugToHtml() {
   return src('./src/*.pug')
+    .pipe(plumber())
     .pipe(pug({ pretty: true }))
     .pipe(dest('./src'))
     .pipe(browserSync.stream());
