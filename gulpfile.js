@@ -69,7 +69,7 @@ function moveFiles() {
     './src/js/main.js',
     './src/images/*.*',
     '!./src/images/stack',
-    '!./src/images/*.svg', './src/images/sprite.svg',
+    // '!./src/images/*.svg', './src/images/sprite.svg',
     './src/fonts/*.*',
   ], { base: 'src' })
     .pipe(dest('./dist'));
