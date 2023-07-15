@@ -42,7 +42,6 @@ function scssToCss() {
     .pipe(plumber())
     .pipe(sourcemaps.init())
       .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
-      .pipe(autoprefixer({ overrideBrowserslist: ["last 10 version"] }))
       .pipe(rename('style.min.css'))
       .pipe(sourcemaps.write('.'))
     .pipe(dest('./src/css'))
@@ -57,7 +56,7 @@ function pugToHtml() {
     .pipe(browserSync.stream());
 }
 
-function cleanDist() {
+function clearDist() {
   return src('dist', { allowEmpty: true })
     .pipe(clean());
 }
@@ -73,6 +72,12 @@ function moveFiles() {
     './src/fonts/*.*',
   ], { base: 'src' })
     .pipe(dest('./dist'));
+}
+
+function prefixCss() {
+  return src('./src/css/style.min.css')
+    .pipe(autoprefixer({ overrideBrowserslist: ["last 10 version"] }))
+    .pipe(dest('./src/css'));
 }
 
 function babelifyJs() {
@@ -136,7 +141,7 @@ function fonts() {
 module.exports.scss = scssToCss;
 module.exports.pug = pugToHtml;
 module.exports.watch = watching;
-module.exports.build = series(cleanDist, moveFiles, babelifyJs, uniteJs);
+module.exports.build = series(clearDist, prefixCss, moveFiles, babelifyJs, uniteJs);
 module.exports.dev = parallel(scssToCss, pugToHtml, startBrowser, watching);
 
 // Картинки
